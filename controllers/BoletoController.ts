@@ -1,24 +1,11 @@
-import { Application, IRoute } from "express";
+import { AbstractController } from "./AbstractController";
 
-export class BoletoController{
+export class BoletoController extends AbstractController{
     
-    //usando inversão de dependência para instanciar o application express no controller;
-    //declarando propriedade app para receber o application express do middleware
-    private app?:Application;
-    private prefix: string = '/boletos';
-    
-    //método forApp para receber o application express passado como parâmetro;
-    forApp(app: Application){
-        this.app = app;
-        return this;
-    }
+    //variável prefix para receber o path da rota;
+    protected prefix: string = '/boletos';
 
-    //encapsulamento da chamada para as rotas
-    forRouter(path: string) : IRoute{
-        return this.app?.route(`${this.prefix}${path}`) as IRoute;
-    }
-
-    //criando os métodos para criação das rotas do CRUD
+    //métodos para criação das rotas
     listar(){
         return function(req : any, res : any, next : any) {
             res.send('Listagem de Contas a pagar');
