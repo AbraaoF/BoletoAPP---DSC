@@ -1,10 +1,12 @@
+import { BoletoController } from "./controllers/BoletoController";
+
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var loginRouter = require('./routes/login');
+// var indexRouter = require('./routes/index');
+// var loginRouter = require('./routes/login');
 
 var app = express();
 
@@ -14,7 +16,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/login', loginRouter);
+// app.use('/', indexRouter);
+// app.use('/login', loginRouter);
+
+//instanciando o controller BoletoController, passando o Application express e registrando as rotas;
+new BoletoController().forApp(app).routes();
 
 module.exports = app;
