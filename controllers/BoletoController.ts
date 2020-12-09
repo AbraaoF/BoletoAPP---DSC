@@ -1,4 +1,6 @@
+
 import { injectable } from "inversify";
+
 import { AbstractController } from "./AbstractController";
 
 export class BoletoController extends AbstractController{
