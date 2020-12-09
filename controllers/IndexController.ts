@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { AbstractController } from "./AbstractController";
 
 export class IndexController extends AbstractController{

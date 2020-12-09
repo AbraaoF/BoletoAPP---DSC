@@ -1,5 +1,11 @@
+//import para usar o @injectable()
+import "reflect-metadata";
 import { Application, IRoute } from "express";
+import { injectable } from "inversify";
 import { IController } from "./IController";
+
+//informando que as classes (controllers) poderão e serão usados em outras classes.
+@injectable()
 
 export abstract class AbstractController implements IController{
     
