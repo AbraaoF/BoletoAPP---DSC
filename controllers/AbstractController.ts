@@ -1,5 +1,3 @@
-//import para usar o @injectable()
-import "reflect-metadata";
 import { Application, IRoute } from "express";
 import { injectable } from "inversify";
 import { IController } from "./IController";

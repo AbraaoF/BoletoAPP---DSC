@@ -1,6 +1,12 @@
+//import para usar o @injectable()
+import { connect } from "http2";
+import "reflect-metadata";
 import { IController } from "./controllers/IController";
 import ControllerContainer from "./controllers/InversifyContainer/ControllerContainer";
 import ControllerTypes from "./controllers/InversifyContainer/ControllerTypes";
+
+//importando a conexão com o banco de dados
+import "./connect";
 
 var express = require('express');
 var path = require('path');
