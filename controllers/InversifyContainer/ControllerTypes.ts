@@ -1,5 +1,5 @@
 
-//informa quais objetos o Container vai gerenciar
+//informa quais os tipos de objetos o Container vai gerenciar
 const ControllerTypes = {
     Controller: Symbol('Controller'),
 }
