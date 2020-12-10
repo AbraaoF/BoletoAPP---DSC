@@ -1,4 +1,5 @@
 import { AbstractController } from "./AbstractController";
+import Boleto from '../models/Boleto';
 
 export class BoletoController extends AbstractController{
     
@@ -7,28 +8,59 @@ export class BoletoController extends AbstractController{
 
     //métodos para criação das rotas
     listar(){
-        return function(req : any, res : any, next : any) {
-            res.send('Listagem de Contas a pagar');
+        return async function(req : any, res : any, next : any) {
+            res.send(await Boleto.find());
         };
     }
     adicionar(){
-        return function(req : any, res : any, next : any) {
-            res.send('Adicionar Conta a pagar');
-        }
+        return async function(req : any, res : any, next : any) {
+            let conta: Boleto = new Boleto();
+            conta.nome = req.body.nome;
+            conta.valor = req.body.valor;
+            conta.status = req.body.status;
+            conta.dataValidade = req.body.dataValidade;
+            conta.idUsuario = req.body.idUsuario;
+            await conta.save();
+            await res.send(conta);
+        };
     }
     consultar(){
-        return function(req : any, res : any, next : any) {
-            res.send(`Consultar Conta a pagar #${req.params.id}`);
+        return async function(req : any, res : any, next : any) {
+            let conta: Boleto | undefined = await Boleto.findOne({nome: req.params.nome});
+            if (!conta) {
+                res.send(404);
+            }
+            res.send(conta);
         }
     }
     alterar(){
-        return function(req : any, res : any, next : any) {
-            res.send(`Alterar Conta a pagar #${req.params.id}`);
+        return async function(req : any, res : any, next : any) {
+            let conta: Boleto = await Boleto.findOne({nome: req.params.login}) as Boleto;
+            
+            if (!conta) {
+                res.send(404);
+            }
+
+            conta.nome = req.body.nome;
+            conta.valor = req.body.valor;
+            conta.status = req.body.status;
+            conta.dataValidade = req.body.dataValidade;
+            conta.idUsuario = req.body.idUsuario;
+            await conta.save();
+
+            res.send(conta);
         }
     }
     remover(){
-        return function(req : any, res : any, next : any) {
-            res.send(`Excluir Conta a pagar #${req.params.id}`);
+        return async function(req : any, res : any, next : any) {
+            let conta: Boleto = await Boleto.findOne({nome: req.params.login}) as Boleto;
+            
+            if (!conta) {
+                res.send(404);
+            }
+            await conta.remove();
+
+            res.send(conta);
         }
     }
 
@@ -36,7 +68,7 @@ export class BoletoController extends AbstractController{
     routes(){
         this.forRouter('/').get(this.listar());
         this.forRouter('/').post(this.adicionar());
-        this.forRouter('/:id').get(this.consultar());
+        this.forRouter('/:nome').get(this.consultar());
         this.forRouter('/:id').put(this.alterar());
         this.forRouter('/:id').delete(this.remover());
     }

@@ -1,4 +1,4 @@
-import { Application, IRoute } from "express";
+import { Application, IRoute, Request, Response, NextFunction } from "express";
 import { injectable } from "inversify";
 import { IController } from "./IController";
 

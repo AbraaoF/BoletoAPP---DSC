@@ -5,6 +5,7 @@
     "username": "postgres",
     "password": "123456789",
     "database": "boletoapp",
+    "synchronize": true,
     "logging": false,
     "entities": [
        "models/**/*.ts"

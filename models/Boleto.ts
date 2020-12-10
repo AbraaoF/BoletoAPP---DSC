@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
 
 //sinalizando que a classe Usuario representa uma tabela no banco
 @Entity('boletos')
-class Boleto {
+class Boleto extends BaseEntity {
 
     @PrimaryGeneratedColumn('increment')
     id: string;
