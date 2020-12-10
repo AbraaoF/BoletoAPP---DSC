@@ -35,7 +35,7 @@ export class BoletoController extends AbstractController{
     }
     alterar(){
         return async function(req : any, res : any, next : any) {
-            let conta: Boleto = await Boleto.findOne({nome: req.params.login}) as Boleto;
+            let conta: Boleto = await Boleto.findOne({nome: req.params.nome}) as Boleto;
             
             if (!conta) {
                 res.send(404);
@@ -53,7 +53,7 @@ export class BoletoController extends AbstractController{
     }
     remover(){
         return async function(req : any, res : any, next : any) {
-            let conta: Boleto = await Boleto.findOne({nome: req.params.login}) as Boleto;
+            let conta: Boleto = await Boleto.findOne({nome: req.params.nome}) as Boleto;
             
             if (!conta) {
                 res.send(404);
@@ -69,8 +69,8 @@ export class BoletoController extends AbstractController{
         this.forRouter('/').get(this.listar());
         this.forRouter('/').post(this.adicionar());
         this.forRouter('/:nome').get(this.consultar());
-        this.forRouter('/:id').put(this.alterar());
-        this.forRouter('/:id').delete(this.remover());
+        this.forRouter('/:nome').put(this.alterar());
+        this.forRouter('/:nome').delete(this.remover());
     }
 
 }
