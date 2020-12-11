@@ -1,22 +1,22 @@
-import { verify } from "crypto";
-import { Request, Response, NextFunction } from "express";
-import jwt from 'jsonwebtoken';
+require("dotenv").config();
 
+const jwt = require("jsonwebtoken");
 
-export default function authMiddleware(req: Request, res: Response, next: NextFunction){
-    
-    const { authorization } = req.headers;
+const { promisify } = require("util");
 
-    if(!authorization){
-        return res.sendStatus(401);
-    }
+module.exports = async (req: any, res: any) => {
+    const authHeader = req.headers.authorization;
 
-    const token = authorization.replace('Bearer', '').trim();
+  if (!authHeader) {
+    return { error: true, msg: "Você não tem permissão para vizualizar esta página, Faça seu login novamente" };
+  }
 
-    try {
-        const data = jwt.verify(token, 'secret');
-        console.log(data);
-    } catch {
-        return res.sendStatus(401);
-    }
-}
+  const [, token] = authHeader.split(" ");
+
+  try {
+    await promisify(jwt.verify)(token, 'secret');
+    return { error: false };
+  } catch (error) {
+    return { error: true, msg: "Você não tem permissão para vizualizar esta página" };
+  }
+};

@@ -18,6 +18,8 @@ export abstract class AbstractController implements IController{
         return this;
     }
 
+    
+
     //encapsulamento da chamada para as rotas
     forRouter(path: string): IRoute{
         return this.app?.route(`${this.prefix}${path}`) as IRoute;

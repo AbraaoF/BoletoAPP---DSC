@@ -1,5 +1,4 @@
 //import para usar o @injectable()
-import { connect } from "http2";
 import "reflect-metadata";
 import { IController } from "./controllers/IController";
 import ControllerContainer from "./controllers/InversifyContainer/ControllerContainer";
