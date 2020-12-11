@@ -4,6 +4,12 @@ const jwt = require("jsonwebtoken");
 
 const { promisify } = require("util");
 
+interface TokenPayLoad {
+  id: string,
+  iat: number,
+  exp: number
+}
+
 module.exports = async (req: any, res: any) => {
     const authHeader = req.headers.authorization;
 
@@ -14,9 +20,17 @@ module.exports = async (req: any, res: any) => {
   const [, token] = authHeader.split(" ");
 
   try {
-    await promisify(jwt.verify)(token, 'secret');
+    const data = await promisify(jwt.verify)(token, 'secret');
+
+    const { id } = data as TokenPayLoad;
+    req.userId = id;
+    //verificando o usuário logado com o usuário informado
+    if(req.params.idUsuario != req.userId) {
+      return { error: true, msg: "Você não tem permissão para vizualizar esta página" };
+    }
+
     return { error: false };
   } catch (error) {
-    return { error: true, msg: "Você não tem permissão para vizualizar esta página" };
+    return { error: true, msg: "Você não tem autorização para vizualizar esta página" };
   }
 };

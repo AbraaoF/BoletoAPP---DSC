@@ -12,29 +12,30 @@ export class BoletoController extends AbstractController{
     listar(){
         
         return async (req: any, res: any, next: any) => {
-            //autenticação
+            //autenticação e autorização
             let autenticou = await auth(req, res);
             if (autenticou.error) {
               return res.status(403).json({ msg: autenticou.msg });
             }
-            
-            return res.json(await Boleto.find());
+
+            return res.json(await Boleto.find({ where: { idUsuario: req.params.idUsuario } }));
           };
     }
     //método para criação de boletos
     adicionar(){
         return async function(req : any, res : any, next : any) {
+            //autenticação e autorização
             let autenticou = await auth(req, res);
             if (autenticou.error) {
               return res.status(403).json({ msg: autenticou.msg });
             }
-            
+
             let conta: Boleto = new Boleto();
             conta.nome = req.body.nome;
             conta.valor = req.body.valor;
             conta.status = req.body.status;
             conta.dataValidade = req.body.dataValidade;
-            conta.idUsuario = req.body.idUsuario;
+            conta.idUsuario = req.params.idUsuario;
             await conta.save();
             await res.send(conta);
         };
@@ -42,13 +43,14 @@ export class BoletoController extends AbstractController{
     //método para consultar boleto
     consultar(){
         return async function(req : any, res : any, next : any) {
-            let conta: Boleto | undefined = await Boleto.findOne({nome: req.params.nome});
-            //autenticação
+            //autenticação e autorização
             let autenticou = await auth(req, res);
             if (autenticou.error) {
               return res.status(403).json({ msg: autenticou.msg });
             }
-            
+            //buscando conta de acordo com o usuário logado
+            let conta: Boleto | undefined = await Boleto.findOne({idUsuario: req.params.idUsuario, nome: req.params.nome});
+            //verificando se existe conta
             if (!conta) {
                 res.send(404);
             }
@@ -58,12 +60,13 @@ export class BoletoController extends AbstractController{
     //método para alterar boleto
     alterar(){
         return async function(req : any, res : any, next : any) {
-            let conta: Boleto = await Boleto.findOne({nome: req.params.nome}) as Boleto;
-            //autenticação
+            //autenticação e autorização
             let autenticou = await auth(req, res);
             if (autenticou.error) {
               return res.status(403).json({ msg: autenticou.msg });
             }
+
+            let conta: Boleto = await Boleto.findOne({idUsuario: req.params.idUsuario, nome: req.params.nome}) as Boleto;
             
             if (!conta) {
                 res.send(404);
@@ -73,7 +76,7 @@ export class BoletoController extends AbstractController{
             conta.valor = req.body.valor;
             conta.status = req.body.status;
             conta.dataValidade = req.body.dataValidade;
-            conta.idUsuario = req.body.idUsuario;
+            conta.idUsuario = req.params.idUsuario;
             await conta.save();
 
             res.send(conta);
@@ -82,13 +85,13 @@ export class BoletoController extends AbstractController{
     //método para remover boleto
     remover(){
         return async function(req : any, res : any, next : any) {
-            //autenticação
+            //autenticação e autorização
             let autenticou = await auth(req, res);
             if (autenticou.error) {
               return res.status(403).json({ msg: autenticou.msg });
             }
-            
-            let conta: Boleto = await Boleto.findOne({nome: req.params.nome}) as Boleto;
+
+            let conta: Boleto | undefined = await Boleto.findOne({idUsuario: req.params.idUsuario, nome: req.params.nome}) as Boleto;
             
             if (!conta) {
                 res.send(404);
@@ -101,11 +104,11 @@ export class BoletoController extends AbstractController{
 
     //instanciando a criação das rotas;
     routes(){
-        this.forRouter('/').get(this.listar());
-        this.forRouter('/').post(this.adicionar());
-        this.forRouter('/:nome').get(this.consultar());
-        this.forRouter('/:nome').put(this.alterar());
-        this.forRouter('/:nome').delete(this.remover());
+        this.forRouter('/:idUsuario').get(this.listar());
+        this.forRouter('/:idUsuario').post(this.adicionar());
+        this.forRouter('/:idUsuario/:nome').get(this.consultar());
+        this.forRouter('/:idUsuario/:nome').delete(this.remover());
+        this.forRouter('/:idUsuario/:nome').put(this.alterar());
     }
 
 }

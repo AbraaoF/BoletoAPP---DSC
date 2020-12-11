@@ -18,7 +18,7 @@ class Usuario extends BaseEntity {
     @BeforeInsert()
     @BeforeUpdate()
     hashPassword() {
-        this.senha = bcypt.hashSync(this.senha, 8);
+        this.senha = bcypt.hashSync(this.senha, 8);     /*Encriptando a senha com um salt de 8 */
     }
 }
 

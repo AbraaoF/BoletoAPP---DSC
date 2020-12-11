@@ -1,5 +1,7 @@
 import { AbstractController } from "./AbstractController";
 import Usuario from '../models/Usuario';
+import Boleto from "../models/Boleto";
+import { promises } from "fs";
 
 const auth = require("../middlewares/authMiddleware");
 
@@ -22,11 +24,6 @@ export class UserController extends AbstractController{
     //método para listar os usuários
     listar(){
         return async function(req : any, res : any, next : any) {
-            //autenticação
-            let autenticou = await auth(req, res);
-            if (autenticou.error) {
-              return res.status(403).json({ msg: autenticou.msg });
-            }
             
             res.send(await Usuario.find());
         }
@@ -35,11 +32,6 @@ export class UserController extends AbstractController{
     //método para buscar usuário pelo login
     consultar(){
         return async function(req : any, res : any, next : any) {
-            //autenticação
-            let autenticou = await auth(req, res);
-            if (autenticou.error) {
-              return res.status(403).json({ msg: autenticou.msg });
-            }
             
             let usuario: Usuario | undefined = await Usuario.findOne({login: req.params.login});
             if (!usuario) {
@@ -52,13 +44,13 @@ export class UserController extends AbstractController{
     //método para alterar o usuário
     alterar(){
         return async function(req : any, res : any, next : any) {
-            //autenticação
+            //autenticação e autorização
             let autenticou = await auth(req, res);
             if (autenticou.error) {
               return res.status(403).json({ msg: autenticou.msg });
             }
             
-            let usuario: Usuario = await Usuario.findOne({login: req.params.login}) as Usuario;
+            let usuario: Usuario = await Usuario.findOne({id: req.params.idUsuario, login: req.params.login}) as Usuario;
             
             if (!usuario) {
                 res.send(404);
@@ -75,19 +67,19 @@ export class UserController extends AbstractController{
     //método para remover usuário
     remover(){
         return async function(req : any, res : any, next : any) {
-            //autenticação
+            //autenticação e autorização
             let autenticou = await auth(req, res);
             if (autenticou.error) {
               return res.status(403).json({ msg: autenticou.msg });
             }
             
-            let usuario: Usuario = await Usuario.findOne({login: req.params.login}) as Usuario;
+            let usuario: Usuario = await Usuario.findOne({id: req.params.idUsuario, login: req.params.login}) as Usuario;
             
             if (!usuario) {
                 res.send(404);
             }
             await usuario.remove();
-
+            
             res.send(usuario);
         }
     }
@@ -97,8 +89,8 @@ export class UserController extends AbstractController{
         this.forRouter('/').post(this.criar());
         this.forRouter('/').get(this.listar());
         this.forRouter('/:login').get(this.consultar());
-        this.forRouter('/:login').put(this.alterar());
-        this.forRouter('/:login').delete(this.remover());
+        this.forRouter('/:idUsuario/:login').put(this.alterar());
+        this.forRouter('/:idUsuario/:login').delete(this.remover());
     }
 
 }
