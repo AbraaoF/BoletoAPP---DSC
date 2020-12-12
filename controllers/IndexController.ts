@@ -8,7 +8,7 @@ export class IndexController extends AbstractController{
     //métodos para criação das rotas
     dashboard(){
         return function(req : any, res : any, next : any) {
-            res.send('Dashboard - BoletoApp');
+            res.send('Dashboard - BoletoApp v1');
         };
     }
 

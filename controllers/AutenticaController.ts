@@ -2,7 +2,6 @@ import { AbstractController } from "./AbstractController";
 import { getRepository } from "typeorm";
 import bcrypt from 'bcryptjs';
 import  jwt from 'jsonwebtoken';
-
 import Usuario from '../models/Usuario';
 
 export class AutenticaController extends AbstractController{
@@ -11,23 +10,23 @@ export class AutenticaController extends AbstractController{
     protected prefix: string = '/auth';
 
     //método para autenticação de usuários
-     autentica(){
+    autentica(){
         return async function(req : any, res : any, next : any) {
             const repository = getRepository(Usuario);
             const { login, senha } = req.body;
-            
+            //validando login
             const user = await repository.findOne({ where: { login } });
             
             if(!user){
                 return res.sendStatus(401);
             }
-
+            //validando senha
             const validPass = await bcrypt.compare(senha, user.senha);
 
             if(!validPass){
                 return res.sendStatus(401);
             }
-
+            //criando token para usuário
             const token = jwt.sign({ id: user.id }, 'secret', { expiresIn: '1d' });
 
             return res.json({

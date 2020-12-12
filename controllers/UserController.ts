@@ -1,7 +1,6 @@
 import { AbstractController } from "./AbstractController";
 import Usuario from '../models/Usuario';
 import Boleto from "../models/Boleto";
-import { promises } from "fs";
 
 const auth = require("../middlewares/authMiddleware");
 
@@ -45,9 +44,9 @@ export class UserController extends AbstractController{
     alterar(){
         return async function(req : any, res : any, next : any) {
             //autenticação e autorização
-            let autenticou = await auth(req, res);
-            if (autenticou.error) {
-              return res.status(403).json({ msg: autenticou.msg });
+            let autenticacao = await auth(req, res);
+            if (autenticacao.error) {
+              return res.status(403).json({ msg: autenticacao.msg });
             }
             
             let usuario: Usuario = await Usuario.findOne({id: req.params.idUsuario, login: req.params.login}) as Usuario;
@@ -68,9 +67,9 @@ export class UserController extends AbstractController{
     remover(){
         return async function(req : any, res : any, next : any) {
             //autenticação e autorização
-            let autenticou = await auth(req, res);
-            if (autenticou.error) {
-              return res.status(403).json({ msg: autenticou.msg });
+            let autenticacao = await auth(req, res);
+            if (autenticacao.error) {
+              return res.status(403).json({ msg: autenticacao.msg });
             }
             
             let usuario: Usuario = await Usuario.findOne({id: req.params.idUsuario, login: req.params.login}) as Usuario;
@@ -78,6 +77,8 @@ export class UserController extends AbstractController{
             if (!usuario) {
                 res.send(404);
             }
+
+            await Boleto.remove(await Boleto.find({ where: { idUsuario: req.params.idUsuario } }));
             await usuario.remove();
             
             res.send(usuario);

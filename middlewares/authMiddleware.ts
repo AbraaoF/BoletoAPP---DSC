@@ -1,3 +1,5 @@
+import Usuario from "../models/Usuario";
+
 require("dotenv").config();
 
 const jwt = require("jsonwebtoken");
@@ -27,6 +29,10 @@ module.exports = async (req: any, res: any) => {
     //verificando o usuário logado com o usuário informado
     if(req.params.idUsuario != req.userId) {
       return { error: true, msg: "Você não tem permissão para vizualizar esta página" };
+    }
+    //verificando se o usuário informado existe
+    if(!Usuario.getId( req.params.idUsuario)){
+      return { error: true, msg: "Usuário não encontrado" };
     }
 
     return { error: false };

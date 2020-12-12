@@ -1,5 +1,8 @@
 import { AbstractController } from "./AbstractController";
 import Boleto from '../models/Boleto';
+import Usuario from "../models/Usuario";
+import { exists } from "fs";
+import { id } from "inversify";
 
 const auth = require("../middlewares/authMiddleware");
 
@@ -10,24 +13,24 @@ export class BoletoController extends AbstractController{
 
     //métodos para listar boletos
     listar(){
-        
         return async (req: any, res: any, next: any) => {
             //autenticação e autorização
-            let autenticou = await auth(req, res);
-            if (autenticou.error) {
-              return res.status(403).json({ msg: autenticou.msg });
+            let autenticacao = await auth(req, res);
+            if (autenticacao.error) {
+              return res.status(403).json({ msg: autenticacao.msg });
             }
 
             return res.json(await Boleto.find({ where: { idUsuario: req.params.idUsuario } }));
           };
     }
+
     //método para criação de boletos
     adicionar(){
         return async function(req : any, res : any, next : any) {
             //autenticação e autorização
-            let autenticou = await auth(req, res);
-            if (autenticou.error) {
-              return res.status(403).json({ msg: autenticou.msg });
+            let autenticacao = await auth(req, res);
+            if (autenticacao.error) {
+              return res.status(403).json({ msg: autenticacao.msg });
             }
 
             let conta: Boleto = new Boleto();
@@ -35,19 +38,21 @@ export class BoletoController extends AbstractController{
             conta.valor = req.body.valor;
             conta.status = req.body.status;
             conta.dataValidade = req.body.dataValidade;
-            conta.idUsuario = req.params.idUsuario;
+            conta.idUsuario = req.params.idUsuario;             /*cadastrando o idUsuario de acordo com o informado no params*/
             await conta.save();
             await res.send(conta);
         };
     }
+
     //método para consultar boleto
     consultar(){
         return async function(req : any, res : any, next : any) {
             //autenticação e autorização
-            let autenticou = await auth(req, res);
-            if (autenticou.error) {
-              return res.status(403).json({ msg: autenticou.msg });
+            let autenticacao = await auth(req, res);
+            if (autenticacao.error) {
+              return res.status(403).json({ msg: autenticacao.msg });
             }
+
             //buscando conta de acordo com o usuário logado
             let conta: Boleto | undefined = await Boleto.findOne({idUsuario: req.params.idUsuario, nome: req.params.nome});
             //verificando se existe conta
@@ -61,9 +66,9 @@ export class BoletoController extends AbstractController{
     alterar(){
         return async function(req : any, res : any, next : any) {
             //autenticação e autorização
-            let autenticou = await auth(req, res);
-            if (autenticou.error) {
-              return res.status(403).json({ msg: autenticou.msg });
+            let autenticacao = await auth(req, res);
+            if (autenticacao.error) {
+              return res.status(403).json({ msg: autenticacao.msg });
             }
 
             let conta: Boleto = await Boleto.findOne({idUsuario: req.params.idUsuario, nome: req.params.nome}) as Boleto;
@@ -76,7 +81,7 @@ export class BoletoController extends AbstractController{
             conta.valor = req.body.valor;
             conta.status = req.body.status;
             conta.dataValidade = req.body.dataValidade;
-            conta.idUsuario = req.params.idUsuario;
+            conta.idUsuario = req.params.idUsuario;             /*cadastrando o idUsuario de acordo com o informado no params*/
             await conta.save();
 
             res.send(conta);
@@ -86,9 +91,9 @@ export class BoletoController extends AbstractController{
     remover(){
         return async function(req : any, res : any, next : any) {
             //autenticação e autorização
-            let autenticou = await auth(req, res);
-            if (autenticou.error) {
-              return res.status(403).json({ msg: autenticou.msg });
+            let autenticacao = await auth(req, res);
+            if (autenticacao.error) {
+              return res.status(403).json({ msg: autenticacao.msg });
             }
 
             let conta: Boleto | undefined = await Boleto.findOne({idUsuario: req.params.idUsuario, nome: req.params.nome}) as Boleto;
